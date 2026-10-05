@@ -1,0 +1,68 @@
+# ============================================================
+# 範例目標：books.toscrape.com（公開練習站，允許爬取）
+# 這是一個「列表頁 -> 詳細頁」的目標：先爬列表頁取得書籍連結，
+# 再進入每本書的詳細頁萃取欄位。
+# ============================================================
+
+name: example
+description: "books.toscrape.com 練習站 - 書籍清單（列表頁 -> 詳細頁）"
+
+# 抓取策略（留空則沿用 settings.yaml 的 fetch.strategy）
+strategy: auto
+
+# 模式：detail = 列表頁 -> 詳細頁；list = 欄位直接從列表項目萃取
+mode: detail
+
+start_url: "https://books.toscrape.com/catalogue/page-1.html"
+
+# 翻頁規則
+pagination:
+  # url_pattern = 用頁碼套用 URL 樣式；next_link = 找「下一頁」連結；
+  # single = 只有一頁
+  type: url_pattern
+  pattern: "https://books.toscrape.com/catalogue/page-{page}.html"
+  start_page: 1
+  max_pages: 5
+  # next_link 模式使用：
+  # next_selector: "li.next a"
+  # next_attribute: href
+
+# 列表頁：如何找到每個項目
+list:
+  # detail 模式下，這個選擇器抓到的元素內含連結
+  item_selector: "article.product_pod h3 a"
+  # 若 item_selector 抓到的不是 <a> 本身，可用 link_selector 指定內部連結；
+  # 留空則自動使用元素本身或其內部第一個 <a>
+  # link_selector: "a"
+  link_attribute: href
+
+# 詳細頁：要萃取哪些欄位
+fields:
+  - name: title
+    selector: "div.product_main h1"
+    extract: text
+
+  - name: price
+    selector: "p.price_color"
+    extract: text
+
+  - name: availability
+    selector: "p.instock.availability"
+    extract: text
+
+  - name: rating
+    selector: "p.star-rating"
+    extract: attribute
+    attribute: class
+
+  - name: category
+    selector: "ul.breadcrumb li:nth-of-type(3) a"
+    extract: text
+
+  - name: upc
+    selector: "table.table-striped tr:nth-of-type(1) td"
+    extract: text
+
+  - name: description
+    selector: "#product_description ~ p"
+    extract: text

@@ -1,0 +1,52 @@
+# ============================================================
+# 全域設定（所有目標共用；目標設定檔可覆寫 strategy 等欄位）
+# ============================================================
+
+fetch:
+  # 抓取策略：auto = 靜態優先、必要時自動 fallback 到 Playwright
+  #           static = 只用 requests + BeautifulSoup
+  #           dynamic = 一律用 Playwright（需要 JS 渲染的網站）
+  strategy: auto
+
+  # 每個請求之間的隨機延遲（秒），避免對目標站造成壓力
+  delay_min: 1.0
+  delay_max: 3.0
+
+  # 單次請求 / 頁面載入逾時（秒）
+  timeout: 30
+
+  # 失敗重試次數與每次重試的等待秒數（指數退避）
+  retries: 3
+  retry_backoff: [5, 15, 45]
+
+  # 自訂 User-Agent（建議標示用途；尊重 robots.txt）
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36 WebCrawlerSetup/0.1"
+
+  # 是否檢查 robots.txt（合規）
+  respect_robots: true
+
+browser:
+  # 動態抓取時是否使用無頭瀏覽器（排程執行建議 true）
+  headless: true
+
+run:
+  # 這次執行最多處理幾個「列表頁」，0 = 不限
+  max_pages: 0
+  # 遇到無法修復的錯誤時是否立即停止（false = 記錄後繼續下一頁）
+  stop_on_error: false
+
+output:
+  dir: data/output
+  # 輸出格式：xlsx / csv / json
+  format: xlsx
+  # 檔名是否加上時間戳（crawl_目標_YYYYMMDD_HHMMSS.xlsx）
+  add_timestamp: true
+
+checkpoint:
+  # 啟用斷點續爬：中斷後重跑會自動跳過已完成的頁面 / 項目
+  enabled: true
+  dir: data/checkpoints
+
+logging:
+  dir: logs
+  level: INFO
